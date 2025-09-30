@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Nube de Palabras en Vivo (GitHub)</title>
+    <style>
+        body { margin: 0; padding: 0; overflow: hidden; background-color: #f0f0f0; }
+        #wordcloudCanvas { width: 100%; height: 100%; display: block; }
+    </style>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.0.6/wordcloud2.js"></script>
+</head>
+<body>
+    <canvas id="wordcloudCanvas"></canvas>
+
+    <script>
+        // 🚨 REEMPLAZAR con la URL que copió en el Paso 1. Debe terminar en /exec
+        const DATA_API_URL = 'https://script.google.com/macros/s/AKfycbz0mVRXN84bd-nCa9a5YPJbm6RJDRUZAJnk2AcdoB-RYUYbdSueXBl1K2-nqENJiTWO/exec'; 
+        
+        function fetchAndDrawCloud() {
+            // Llama al script de Google como un API para obtener el JSON de datos
+            fetch(DATA_API_URL + '?call=getWordCloudData')
+                .then(response => response.json())
+                .then(list => onDataReceived(list))
+                .catch(error => console.error('Error al obtener datos:', error));
+        }
+
+        function onDataReceived(list) {
+            const canvas = document.getElementById('wordcloudCanvas');
+            
+            if (!canvas || !list || list.length === 0 || !window.WordCloud) {
+                console.error("No hay datos o librería no cargada.");
+                return;
+            }
+
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            WordCloud(canvas, { 
+                list: list, 
+                // CORRECCIÓN DE TAMAÑO FINAL
+                minSize: 20,         
+                weightFactor: 5,     
+                rotateRatio: 0,      
+                color: 'random-dark',
+                backgroundColor: '#f0f0f0'
+            });
+        }
+
+        window.onload = function() {
+            fetchAndDrawCloud(); // Llamada inicial
+            setInterval(fetchAndDrawCloud, 15000); // Actualización en vivo
+        };
+
+        window.onresize = function() {
+            fetchAndDrawCloud(); 
+        };
+    </script>
+</body>
+</html>
