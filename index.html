@@ -2,62 +2,73 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Nube de Palabras en Vivo (GitHub)</title>
+    <title>Nube de Palabras Estables (FRENZY)</title>
     <style>
-        body { margin: 0; padding: 0; overflow: hidden; background-color: #f0f0f0; }
-        #wordcloudCanvas { width: 100%; height: 100%; display: block; }
+        body { margin: 0; padding: 20px; background-color: #f0f0f0; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: sans-serif; }
+        #wordcloudContainer { text-align: center; }
+        .word { 
+            display: inline-block; 
+            padding: 5px 8px;
+            margin: 5px;
+            border-radius: 5px;
+            transition: font-size 0.5s;
+        }
     </style>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.0.6/wordcloud2.js"></script>
 </head>
 <body>
-    <canvas id="wordcloudCanvas"></canvas>
+    <div id="wordcloudContainer">
+        <p>Cargando datos...</p>
+    </div>
 
     <script>
-        // 🚨 REEMPLAZAR con la URL que copió en el Paso 1. Debe terminar en /exec
-        const DATA_API_URL = 'https://script.google.com/macros/s/AKfycbylKrn4Xv88uZ1MNeQsa4nU0jPreHmt6yj4b5A6D9SM-mQIh-LqEFewFWfjJfRIAg96/exec'; 
-        
+        // 🚨 REEMPLAZAR con la URL que copió. Debe terminar en /exec
+        const DATA_API_URL = 'https://script.google.com/macros/s/AKfycbzTgrB0UIG6dS0ivueA_ZK55rDzBrSXSVPiR-MqemHmieBLZQXLsF-B22PnR123SOCm/exec'; 
+
+        // Definir un rango de colores simples
+        const colors = ['#007bff', '#28a745', '#dc3545', '#ffc107', '#6f42c1'];
+
         function fetchAndDrawCloud() {
-            // Llama al script de Google como un API para obtener el JSON de datos
-            fetch(DATA_API_URL + '?call=getWordCloudData')
+            fetch(DATA_API_URL)
                 .then(response => response.json())
-                .then(list => onDataReceived(list))
-                .catch(error => console.error('Error al obtener datos:', error));
+                .then(list => drawWordCloud(list))
+                .catch(error => {
+                    console.error('Error al obtener datos:', error);
+                    document.getElementById('wordcloudContainer').innerHTML = "<p style='color:red;'>Error al cargar la nube.</p>";
+                });
         }
 
-        function onDataReceived(list) {
-            const canvas = document.getElementById('wordcloudCanvas');
-            
-            if (!canvas || !list || list.length === 0 || !window.WordCloud) {
-                console.error("No hay datos o librería no cargada.");
+        function drawWordCloud(list) {
+            const container = document.getElementById('wordcloudContainer');
+            if (!container || !list || list.length === 0) {
+                container.innerHTML = "<p>Aún no hay suficientes palabras.</p>";
                 return;
             }
 
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+            // Encontrar el factor de escalado para el tamaño de fuente
+            const maxCount = list.reduce((max, [word, count]) => Math.max(max, count), 0);
+            const minFontSize = 20; // Tamaño base para la palabra menos frecuente
+            const maxFontSize = 100; // Tamaño máximo
+            const range = maxFontSize - minFontSize;
 
-            WordCloud(canvas, { 
-                list: list, 
-                // CORRECCIÓN DE TAMAÑO FINAL
-                minSize: 20,         
-                weightFactor: 5,     
-                rotateRatio: 0,      
-                color: 'random-dark',
-                backgroundColor: '#f0f0f0'
+            let htmlContent = '';
+            
+            list.forEach(([word, count], index) => {
+                // Calcular el tamaño de fuente usando una escala logarítmica para mejor distribución visual
+                const fontSize = minFontSize + (count / maxCount) * range;
+                
+                // Asignar color rotativo
+                const color = colors[index % colors.length];
+
+                htmlContent += `<span class="word" style="font-size: ${fontSize}px; color: ${color};">${word}</span>`;
             });
+
+            container.innerHTML = htmlContent;
         }
 
-       window.onload = function() {
-            fetchAndDrawCloud(); // LLAMADA ÚNICA (Solo se cargará la primera vez)
-        };
-
-        
-        window.onresize = function() {
-            fetchAndDrawCloud(); 
+        window.onload = function() {
+            fetchAndDrawCloud(); // Llamada inicial
+            setInterval(fetchAndDrawCloud, 30000); // Mantenemos 30s por seguridad
         };
     </script>
 </body>
-
 </html>
-
-
