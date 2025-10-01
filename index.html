@@ -4,14 +4,33 @@
     <meta charset="UTF-8">
     <title>Nube de Palabras Estables (FRENZY)</title>
     <style>
-        body { margin: 0; padding: 20px; background-color: #f0f0f0; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: sans-serif; }
-        #wordcloudContainer { text-align: center; }
+        body { 
+            margin: 0; 
+            padding: 20px; 
+            background-color: #f0f0f0; 
+            display: flex; /* Usamos Flexbox para centrar todo */
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            font-family: sans-serif; 
+        }
+        #wordcloudContainer { 
+            text-align: center; 
+            
+            /* 🔥 CORRECCIÓN CLAVE: Esto fuerza a las palabras a agruparse */
+            display: flex; 
+            flex-wrap: wrap; 
+            justify-content: center; 
+            /* Se establece un ancho máximo para que se vea como una nube */
+            max-width: 80%; 
+        }
         .word { 
             display: inline-block; 
             padding: 5px 8px;
-            margin: 5px;
+            margin: 5px; /* Aumenta el margen para separarlas un poco */
             border-radius: 5px;
             transition: font-size 0.5s;
+            line-height: 1.2; /* Reduce el espacio vertical */
         }
     </style>
 </head>
@@ -72,6 +91,7 @@
     </script>
 </body>
 </html>
+
 
 
 
