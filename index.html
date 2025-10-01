@@ -64,7 +64,7 @@
             }
 
             // Encontrar el factor de escalado para el tamaño de fuente
-            const maxCount = list.reduce((max, [word, count]) => Math.max(max, count), 0);
+            const logMax = Math.log(maxCount + 1);
             const minFontSize = 20; // Tamaño base para la palabra menos frecuente
             const maxFontSize = 100; // Tamaño máximo
             const range = maxFontSize - minFontSize;
@@ -115,6 +115,7 @@
     </script>
 </body>
 </html>
+
 
 
 
