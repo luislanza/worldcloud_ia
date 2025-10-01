@@ -2,13 +2,13 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Nube de Palabras IA</title>
+    <title>Nube de Palabras Estables (FINAL)</title>
     <style>
         body { 
             margin: 0; 
             padding: 20px; 
             background-color: #f0f0f0; 
-            display: flex; /* Usamos Flexbox para centrar todo */
+            display: flex; 
             justify-content: center; 
             align-items: center; 
             min-height: 100vh; 
@@ -16,21 +16,19 @@
         }
         #wordcloudContainer { 
             text-align: center; 
-            
-            /* 🔥 CORRECCIÓN CLAVE: Esto fuerza a las palabras a agruparse */
+            /* Agrupar y centrar las palabras en forma de racimo */
             display: flex; 
             flex-wrap: wrap; 
             justify-content: center; 
-            /* Se establece un ancho máximo para que se vea como una nube */
-            max-width: 80%; 
+            max-width: 80%; /* Limitar el ancho para que se agrupe */
         }
         .word { 
             display: inline-block; 
-            padding: 3px 6px; /* Reducir padding */
-            margin: 3px; /* 🆕 OPTIMIZACIÓN: Reducir el margen para que las palabras se junten */
+            padding: 3px 6px; 
+            margin: 3px; /* Juntar más las palabras */
             border-radius: 5px;
             transition: font-size 0.5s;
-            line-height: 1.1; /* Reducir aún más el espacio vertical */
+            line-height: 1.1; /* Reducir el espacio vertical */
         }
     </style>
 </head>
@@ -40,17 +38,15 @@
     </div>
 
     <script>
-        // 🚨 REEMPLAZAR con la URL que copió. Debe terminar en /exec
-        const DATA_API_URL = https://script.google.com/macros/s/AKfycbw7bZwjRHt2H5a9BRpQSDSRQJu1vfVyGt-rNXFPX5WJgb7xQT-AI72pwyRm-TJ306QL/exec'; 
+        // 🚨 CRÍTICO: REEMPLAZAR con su URL de implementación (termina en /exec)
+        const DATA_API_URL = 'https://script.google.com/macros/s/AKfycbw7bZwjRHt2H5a9BRpQSDSRQJu1vfVyGt-rNXFPX5WJgb7xQT-AI72pwyRm-TJ306QL/exec'; 
 
-        // Definir un rango de colores simples
         const colors = ['#007bff', '#28a745', '#dc3545', '#ffc107', '#6f42c1'];
 
         function fetchAndDrawCloud() {
-            // Este fetch debe funcionar para obtener los datos
-            fetch(DATA_API_URL) 
+            // Lógica de fetch a prueba de errores
+            fetch(DATA_API_URL)
                 .then(response => {
-                    // Si el fetch falla, intentará esto.
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
@@ -59,11 +55,11 @@
                 .then(list => drawWordCloud(list))
                 .catch(error => {
                     console.error('Error al obtener datos:', error);
-                    // Mostrar un mensaje de error claro en pantalla
-                    document.getElementById('wordcloudContainer').innerHTML = "<p style='color:red;'>🚨 Error al cargar datos. El script de Google ha fallado o la cuota se agotó.</p>";
+                    document.getElementById('wordcloudContainer').innerHTML = "<p style='color:red;'>🚨 Error: Problema con la cuota de Google o la URL es incorrecta.</p>";
                 });
         }
 
+        // Función de dibujo - Corregida para evitar errores de sintaxis
         function drawWordCloud(list) {
             const container = document.getElementById('wordcloudContainer');
             if (!container || !list || list.length === 0) {
@@ -71,10 +67,9 @@
                 return;
             }
 
-            // Aquí solo se declara una vez
+            // Cálculo Logarítmico (Solo una declaración de 'const')
             const maxCount = list.reduce((max, [word, count]) => Math.max(max, count), 0);
             
-            // Variables de cálculo
             const logMax = Math.log(maxCount + 1); 
             const minFontSize = 20; 
             const maxFontSize = 100; 
@@ -91,68 +86,11 @@
 
             container.innerHTML = htmlContent;
         }
-        
-            // Encontrar el factor de escalado para el tamaño de fuente
-            const logMax = Math.log(maxCount + 1);
-            const minFontSize = 20; // Tamaño base para la palabra menos frecuente
-            const maxFontSize = 100; // Tamaño máximo
-            const range = maxFontSize - minFontSize;
 
-            let htmlContent = '';
-            
-            list.forEach(([word, count], index) => {
-                // Calcular el tamaño de fuente usando una escala logarítmica para mejor distribución visual
-                const fontSize = minFontSize + (count / maxCount) * range;
-                
-                // Asignar color rotativo
-                const color = colors[index % colors.length];
-
-                htmlContent += `<span class="word" style="font-size: ${fontSize}px; color: ${color};">${word}</span>`;
-            });
-
-            // 🆕 OPTIMIZACIÓN DE CÁLCULO DE FUENTE: Usa logaritmo
-            const maxCount = list.reduce((max, [word, count]) => Math.max(max, count), 0);
-            
-            // Usamos un factor de escalado logarítmico para que las frecuencias bajas se vean mejor
-            const logMax = Math.log(maxCount + 1); 
-            const minFontSize = 20; 
-            const maxFontSize = 100; 
-            const range = maxFontSize - minFontSize;
-
-            let htmlContent = '';
-            
-            list.forEach(([word, count], index) => {
-                // Cálculo Logarítmico: Mejor distribución del tamaño en el centro de la nube
-                const fontSize = minFontSize + (Math.log(count + 1) / logMax) * range;
-                
-                // ... (código para asignar color y crear htmlContent queda igual) ...
-                
-                // Asignar color rotativo
-                const color = colors[index % colors.length];
-
-                htmlContent += `<span class="word" style="font-size: ${fontSize}px; color: ${color};">${word}</span>`;
-            });
-
-            container.innerHTML = htmlContent;
-        }
-        }
-
+        // Carga Única - Máxima estabilidad para la presentación
         window.onload = function() {
-            fetchAndDrawCloud(); // Llamada inicial
-           // setInterval(fetchAndDrawCloud, 5000); // Pasamos a 5s por equilibrio seguridad - respuesta
+            fetchAndDrawCloud(); 
         };
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
