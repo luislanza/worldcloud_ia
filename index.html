@@ -48,10 +48,10 @@
         }
 
        window.onload = function() {
-            fetchAndDrawCloud(); // Llamada inicial
-            setInterval(fetchAndDrawCloud, 30000); // ACTUALIZACIÓN CADA 30 SEGUNDOS
+            fetchAndDrawCloud(); // LLAMADA ÚNICA (Solo se cargará la primera vez)
         };
 
+        
         window.onresize = function() {
             fetchAndDrawCloud(); 
         };
@@ -59,4 +59,5 @@
 </body>
 
 </html>
+
 
