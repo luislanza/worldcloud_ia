@@ -71,6 +71,27 @@
                 return;
             }
 
+            // Aquí solo se declara una vez
+            const maxCount = list.reduce((max, [word, count]) => Math.max(max, count), 0);
+            
+            // Variables de cálculo
+            const logMax = Math.log(maxCount + 1); 
+            const minFontSize = 20; 
+            const maxFontSize = 100; 
+            const range = maxFontSize - minFontSize;
+
+            let htmlContent = '';
+            
+            list.forEach(([word, count], index) => {
+                const fontSize = minFontSize + (Math.log(count + 1) / logMax) * range;
+                const color = colors[index % colors.length];
+
+                htmlContent += `<span class="word" style="font-size: ${fontSize}px; color: ${color};">${word}</span>`;
+            });
+
+            container.innerHTML = htmlContent;
+        }
+        
             // Encontrar el factor de escalado para el tamaño de fuente
             const logMax = Math.log(maxCount + 1);
             const minFontSize = 20; // Tamaño base para la palabra menos frecuente
@@ -123,6 +144,7 @@
     </script>
 </body>
 </html>
+
 
 
 
