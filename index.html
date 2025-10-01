@@ -26,11 +26,11 @@
         }
         .word { 
             display: inline-block; 
-            padding: 5px 8px;
-            margin: 5px; /* Aumenta el margen para separarlas un poco */
+            padding: 3px 6px; /* Reducir padding */
+            margin: 3px; /* 🆕 OPTIMIZACIÓN: Reducir el margen para que las palabras se junten */
             border-radius: 5px;
             transition: font-size 0.5s;
-            line-height: 1.2; /* Reduce el espacio vertical */
+            line-height: 1.1; /* Reducir aún más el espacio vertical */
         }
     </style>
 </head>
@@ -81,16 +81,41 @@
                 htmlContent += `<span class="word" style="font-size: ${fontSize}px; color: ${color};">${word}</span>`;
             });
 
+            // 🆕 OPTIMIZACIÓN DE CÁLCULO DE FUENTE: Usa logaritmo
+            const maxCount = list.reduce((max, [word, count]) => Math.max(max, count), 0);
+            
+            // Usamos un factor de escalado logarítmico para que las frecuencias bajas se vean mejor
+            const logMax = Math.log(maxCount + 1); 
+            const minFontSize = 20; 
+            const maxFontSize = 100; 
+            const range = maxFontSize - minFontSize;
+
+            let htmlContent = '';
+            
+            list.forEach(([word, count], index) => {
+                // Cálculo Logarítmico: Mejor distribución del tamaño en el centro de la nube
+                const fontSize = minFontSize + (Math.log(count + 1) / logMax) * range;
+                
+                // ... (código para asignar color y crear htmlContent queda igual) ...
+                
+                // Asignar color rotativo
+                const color = colors[index % colors.length];
+
+                htmlContent += `<span class="word" style="font-size: ${fontSize}px; color: ${color};">${word}</span>`;
+            });
+
             container.innerHTML = htmlContent;
+        }
         }
 
         window.onload = function() {
             fetchAndDrawCloud(); // Llamada inicial
-            setInterval(fetchAndDrawCloud, 15000); // Pasamos a 15s por equilibrio seguridad - respuesta
+            setInterval(fetchAndDrawCloud, 5000); // Pasamos a 5s por equilibrio seguridad - respuesta
         };
     </script>
 </body>
 </html>
+
 
 
 
