@@ -41,18 +41,26 @@
 
     <script>
         // 🚨 REEMPLAZAR con la URL que copió. Debe terminar en /exec
-        const DATA_API_URL = 'https://script.google.com/macros/s/AKfycbzyNyOMwoUw4kBk6PFF90wximWixxqbrQNMQQrNhsXLxauwHjaANAFGrnW6JGvnEVr7/exec'; 
+        const DATA_API_URL = https://script.google.com/macros/s/AKfycbw7bZwjRHt2H5a9BRpQSDSRQJu1vfVyGt-rNXFPX5WJgb7xQT-AI72pwyRm-TJ306QL/exec'; 
 
         // Definir un rango de colores simples
         const colors = ['#007bff', '#28a745', '#dc3545', '#ffc107', '#6f42c1'];
 
         function fetchAndDrawCloud() {
-            fetch(DATA_API_URL)
-                .then(response => response.json())
+            // Este fetch debe funcionar para obtener los datos
+            fetch(DATA_API_URL) 
+                .then(response => {
+                    // Si el fetch falla, intentará esto.
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(list => drawWordCloud(list))
                 .catch(error => {
                     console.error('Error al obtener datos:', error);
-                    document.getElementById('wordcloudContainer').innerHTML = "<p style='color:red;'>Error al cargar la nube.</p>";
+                    // Mostrar un mensaje de error claro en pantalla
+                    document.getElementById('wordcloudContainer').innerHTML = "<p style='color:red;'>🚨 Error al cargar datos. El script de Google ha fallado o la cuota se agotó.</p>";
                 });
         }
 
@@ -115,6 +123,7 @@
     </script>
 </body>
 </html>
+
 
 
 
