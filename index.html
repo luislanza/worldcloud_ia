@@ -87,10 +87,11 @@
             container.innerHTML = htmlContent;
         }
 
-        // Carga Única - Máxima estabilidad para la presentación
         window.onload = function() {
             fetchAndDrawCloud(); 
+            setInterval(fetchAndDrawCloud, 5000); 
         };
     </script>
 </body>
 </html>
+
