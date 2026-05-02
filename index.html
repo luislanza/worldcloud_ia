@@ -16,19 +16,18 @@
         }
         #wordcloudContainer { 
             text-align: center; 
-            /* Agrupar y centrar las palabras en forma de racimo */
             display: flex; 
             flex-wrap: wrap; 
             justify-content: center; 
-            max-width: 80%; /* Limitar el ancho para que se agrupe */
+            max-width: 80%; 
         }
         .word { 
             display: inline-block; 
             padding: 3px 6px; 
-            margin: 3px; /* Juntar más las palabras */
+            margin: 3px; 
             border-radius: 5px;
             transition: font-size 0.5s;
-            line-height: 1.1; /* Reducir el espacio vertical */
+            line-height: 1.1; 
         }
     </style>
 </head>
@@ -39,38 +38,47 @@
     </div>
 
     <script>
-        // 🚨 CRÍTICO: REEMPLAZAR con su URL de implementación (termina en /exec)
         const DATA_API_URL = 'https://script.google.com/macros/s/AKfycby0GMy-IamfZfKizKfQXpZkyV_REu1C99gyqn-UPGig__v_yMSFsAVhub-E8Sq3usTIMw/exec'; 
 
         const colors = ['#007bff', '#28a745', '#dc3545', '#ffc107', '#6f42c1'];
 
+        // --- SECCIÓN DE STOP WORDS ---
+        const stopWords = [
+            'el', 'la', 'los', 'las', 'un', 'una', 'unos', 'unas',
+            'de', 'del', 'a', 'al', 'e', 'o', 'u', 'y', 'en', 'con', 
+            'por', 'para', 'si', 'no', 'que', 'es', 'son', 'su', 'sus',
+            'este', 'esta', 'estos', 'estas', 'como', 'lo'
+        ];
+
         function fetchAndDrawCloud() {
-            // Lógica de fetch a prueba de errores
             fetch(DATA_API_URL)
                 .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                     return response.json();
                 })
-                .then(list => drawWordCloud(list))
+                .then(list => {
+                    // Filtrar la lista antes de dibujar
+                    const filteredList = list.filter(([word]) => {
+                        const cleanWord = word.toLowerCase().trim();
+                        // Solo dejamos pasar palabras que no estén en la lista y que tengan más de 2 letras
+                        return !stopWords.includes(cleanWord) && cleanWord.length > 2;
+                    });
+                    drawWordCloud(filteredList);
+                })
                 .catch(error => {
                     console.error('Error al obtener datos:', error);
-                    document.getElementById('wordcloudContainer').innerHTML = "<p style='color:red;'>🚨 Error: Problema con la cuota de Google o la URL es incorrecta.</p>";
+                    document.getElementById('wordcloudContainer').innerHTML = "<p style='color:red;'>🚨 Error: Problema con la cuota de Google o la URL.</p>";
                 });
         }
 
-        // Función de dibujo - Corregida para evitar errores de sintaxis
         function drawWordCloud(list) {
             const container = document.getElementById('wordcloudContainer');
             if (!container || !list || list.length === 0) {
-                container.innerHTML = "<h1>Esperando...</h1>";
+                container.innerHTML = "<h1>Esperando datos válidos...</h1>";
                 return;
             }
 
-            // Cálculo Logarítmico (Solo una declaración de 'const')
             const maxCount = list.reduce((max, [word, count]) => Math.max(max, count), 0);
-            
             const logMax = Math.log(maxCount + 1); 
             const minFontSize = 20; 
             const maxFontSize = 100; 
@@ -81,7 +89,6 @@
             list.forEach(([word, count], index) => {
                 const fontSize = minFontSize + (Math.log(count + 1) / logMax) * range;
                 const color = colors[index % colors.length];
-
                 htmlContent += `<span class="word" style="font-size: ${fontSize}px; color: ${color};">${word}</span>`;
             });
 
@@ -90,16 +97,8 @@
 
         window.onload = function() {
             fetchAndDrawCloud(); 
-            // 🆕 Intervalo seguro para la cuota de Google
-            setInterval(fetchAndDrawCloud, 5000); 
+            setInterval(fetchAndDrawCloud, 10000); // Aumentado a 10s para mayor estabilidad
         };
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
